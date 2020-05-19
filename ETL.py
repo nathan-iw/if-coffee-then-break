@@ -12,7 +12,8 @@ if __name__ == "__main__":
     print(f"Extract time:")
     print(round(end_extract - start, 4))
     app = Transform()
-    app.transform()
+    raw_data = app.get_raw_data()
+    app.transform(raw_data)
 
     end_transform = time.time()
     print(f"Transform time:")
