@@ -32,15 +32,12 @@ class Transform():
             print("")
         print(f"Drink list: {drink_dict}")
 
-
-
     def drink_breaker(self, raw_order):
         dirty_order = raw_order.split(", ")
         clean_order = []
         for i in dirty_order:
             clean_order.append(i.strip())
         return clean_order
-
     
     def get_drink_list(self, raw_orders, drink_dict):
         for drink in raw_orders:
@@ -52,10 +49,7 @@ class Transform():
                 drink_price = "Unassigned price"
             x = {drink.strip():drink_price}
             drink_dict.update(x)
-            
-
-            # range(len(split_drink))>0
-            
+                      
     def date_breaker(self, date):
         return date.date(), date.time() 
 
