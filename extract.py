@@ -3,7 +3,6 @@ import pymysql
 from os import environ
 import time
 
-
 class Extract():
 
     def get_connection(self):  # function to get the connection string using: pymysql.connect(host, username, password, database)
