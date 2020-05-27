@@ -12,8 +12,8 @@ class Extract():
         try:
             db_connection = pymysql.connect(
                 environ.get("DB_HOST_SAINS"),  # host
-                environ.get("DB_USER_SAINS2"),  # username
-                environ.get("DB_PW_SAINS2"),  # password
+                environ.get("DB_USER_SAINS"),  # username
+                environ.get("DB_PW_SAINS"),  # password
                 environ.get("DB_NAME_SAINS")  # database
             )
             logger.info("Connection successful LOL")
@@ -21,7 +21,7 @@ class Extract():
         except Exception as error:
             logger.critical(f"Connection failed lol {error}")
             print(f"didn't work lol {error}")
-
+    
     def load_data(self):
         raw_data = []
         sql_string = f"SELECT * FROM transactions"
