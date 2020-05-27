@@ -3,11 +3,7 @@ from os import environ
 import time
 from extract import Extract
 import datetime
-
- # loads the raw data list from extract.
-
-# Input:
-# (633, datetime.datetime(2020, 5, 18, 15, 46, 1), 'Isle of Wight', 'Oscar Ohara', ' Frappes - Chocolate Cookie', Decimal('2.75'), 'CASH', None)]
+from log import logger
 
 
 class Transform():
@@ -30,19 +26,15 @@ class Transform():
             t_method = self.pay_method(row[6])
             t_card = self.card_masker(row[7])
             transformed_data.append([t_date, t_time, t_location, t_first_name, t_last_name, t_order, t_price, t_method, t_card])
-
         return (transformed_data, drink_dict)
 
     def drink_breaker(self, raw_order): # tested
         dirty_order = raw_order.split(", ") # 
         clean_order = []
-
         for i in dirty_order:
             clean_order.append(i.strip())
         return clean_order
 
-
-    
     def flavour_breaker(self, drink):
         broken_flavour = []
         flavour = None
@@ -54,6 +46,8 @@ class Transform():
             split_order = drink.split(": ")
             drink = split_order[0]
             flavour = f"Original: {split_order[1]}"
+        else:
+            flavour = "Original"
         broken_flavour.append(drink) 
         broken_flavour.append(flavour) # broken flavour = [large americano, hazlenut: 1.40]
         return broken_flavour
@@ -85,6 +79,9 @@ class Transform():
             else:
                 drink = drink_flav[0]
                 flavour = drink_flav[1]
+                # if flavour == None:
+                #     flavour = "Orginal"
+                # print(flavour)
                 drink_price = None
             drink = self.get_name(drink)
             x = {(drink[1].strip(), drink[0], flavour):drink_price}

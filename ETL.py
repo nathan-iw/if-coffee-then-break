@@ -4,26 +4,35 @@ import time
 from extract import Extract
 from transform import Transform
 from load import Load
-
+from log import logger
+         
+# logger = logging.getLogger(__name__) 
 
 if __name__ == "__main__":
+    logger.info("application ran")
     start = time.time()
     app = Extract()
-    app.load_data()
+    raw_data_list = app.load_data() # extract output 
     end_extract = time.time()
-    print(f"Extract time:")
-    print(round(end_extract - start, 4))
-    apple = Load()
-    transformed_data, transformed_drink_menu_data = apple.get_transformed_data()
+    extract_time = round(end_extract - start, 4)
+    print(f"Extract time: {extract_time}")
+    logger.info(f"Extract time: {extract_time}")
+    apple = Transform()
+    transformed_data, transformed_drink_menu_data = apple.transform(raw_data_list) # raw data into transform returns transformed data and drinks dic
 
     end_transform = time.time()
-    print(f"Transform time:")
-    print(round(end_transform - end_extract, 4))
+    transform_time = round(end_transform - end_extract,4)
+    logger.info(f"Transform time: {transform_time}")
+    print(f"Transform time: {transform_time}")
+    appley = Load()
 
-
-    # apple.save_transaction(transformed_data) # populate RDS instance with cleaned data.
-    apple.save_drink_menu(transformed_drink_menu_data) # generate drinks menu
-
+    appley.save_transaction(transformed_data) # populate RDS instance with cleaned data.
+    appley.save_drink_menu(transformed_drink_menu_data) # generate drinks menu
+ 
     end_load = time.time()
-    print(f"Load time:")
-    print(round(end_load - end_transform, 4))
+    load_time = round(end_load - end_transform, 4)
+    logger.info(f"Loading time: {load_time}")
+    total_time = extract_time + transform_time + load_time
+    logger.info(f"total time: {total_time}")
+    print(f"Load time: {load_time}\nTotal time: {total_time}")
+
