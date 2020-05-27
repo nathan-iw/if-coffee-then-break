@@ -1,6 +1,7 @@
 import boto3
 import json
 import base64
+from log import logger
 from botocore.exceptions import ClientError
 
 def get_secret():
@@ -31,6 +32,7 @@ def get_secret():
     host = secret["host"]
     creds = [host, username, password, "poc_data"]
 
+    logger.info("logger import worked!")
     return(creds)
 
 get_secret()  

@@ -2,9 +2,9 @@
 import pymysql
 from os import environ
 import time
-import logging
+from log import logger
 
-logger = logging.getLogger(__name__) 
+# logger = logging.getLogger(__name__) 
 
 class Extract():
 

@@ -4,10 +4,8 @@ from os import environ
 from extract import Extract
 from transform import Transform
 from Secrets import get_secret
-import logging
+from log import logger
 
-
-logger = logging.getLogger(__name__) 
 
 class Load():
     def get_connection(self):  # function to get the connection string using: pymysql.connect(host, username, password, database)

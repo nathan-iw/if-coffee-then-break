@@ -3,14 +3,7 @@ from os import environ
 import time
 from extract import Extract
 import datetime
-import logging
-
-logger = logging.getLogger(__name__) 
-
- # loads the raw data list from extract.
-
-# Input:
-# (633, datetime.datetime(2020, 5, 18, 15, 46, 1), 'Isle of Wight', 'Oscar Ohara', ' Frappes - Chocolate Cookie', Decimal('2.75'), 'CASH', None)]
+from log import logger
 
 
 class Transform():

@@ -4,15 +4,9 @@ import time
 from extract import Extract
 from transform import Transform
 from load import Load
-import logging
-
-logging.basicConfig(filename='loggy.log',
-                            filemode='w',
-                            format='%(asctime)s,%(msecs)d %(name)s %(levelname)s %(message)s',
-                            datefmt='%H:%M:%S',
-                            level=logging.INFO) # INFO level records everything above DEBUG
-                            
-logger = logging.getLogger(__name__) 
+from log import logger
+         
+# logger = logging.getLogger(__name__) 
 
 if __name__ == "__main__":
     logger.info("application ran")
