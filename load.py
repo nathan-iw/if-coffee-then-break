@@ -8,6 +8,9 @@ from log import logger
 import time
 
 
+
+
+
 class Load():
     def get_connection(self):  # function to get the connection string using: pymysql.connect(host, username, password, database)
         if environ.get("ENVIRONMENT") == "prod":
@@ -42,19 +45,21 @@ class Load():
         connection = self.get_connection()
         start = time.time()
         logger.info(f"The number of transactions processed:{len(transformed_list)}")
+        print(f"The number of transactions processed:{len(transformed_list)}")
         index = 0
         for t in transformed_list:
             args = t[0:9]
             str1 = ''.join(t[5])
             sql_query = "INSERT INTO clean_transactions (date, transaction_time, location, firstname, lastname, drink_order, total_price, method, ccn) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)"
             cursor = self.update_sql(sql_query, args, connection)
+
             if index %10 == 0 and index != 0:
                 t2 = time.time()
                 current_load_time = t2 - start
                 percentage = round(index*100/len(transformed_list),2)
-                total_time_estimate =  current_load_time / percentage * 100
+                total_time_estimate = current_load_time / percentage * 100
                 time_remaining = total_time_estimate - current_load_time
-                print(f"Estimated time remaining: {round(time_remaining,2)} seconds, progress [{percentage}/100%]", end="\r")
+                print(f"Progress: {progress(percentage)} [{percentage}%] Estimated time remaining: {round(time_remaining,2)} seconds", end="\r")
             index += 1
         connection.commit()
         cursor.close()
@@ -74,5 +79,9 @@ class Load():
         cursor.close()
 
        
+def progress(percentage_progress):
+    progress_bar = int(round(percentage_progress,0)) * "#"
+    remaining_bar = (100 - int(round(percentage_progress,0))) * "-"
+    return f"{progress_bar}{remaining_bar}"
 
 
