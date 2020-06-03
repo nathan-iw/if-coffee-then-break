@@ -18,16 +18,18 @@ if __name__ == "__main__":
     print(f"Extract time: {extract_time}")
     logger.info(f"Extract time: {extract_time}")
     apple = Transform()
-    transformed_data, transformed_drink_menu_data = apple.transform(raw_data_list) # raw data into transform returns transformed data and drinks dic
+    transformed_data, transformed_drink_menu_data, location_list = apple.transform(raw_data_list) # raw data into transform returns transformed data and drinks dic
 
     end_transform = time.time()
     transform_time = round(end_transform - end_extract,4)
     logger.info(f"Transform time: {transform_time}")
     print(f"Transform time: {transform_time}")
-    # appley = Load()
+    appley = Load()
 
-    # appley.save_transaction(transformed_data) # populate RDS instance with cleaned data.
+    appley.save_transaction(transformed_data) # populate RDS instance with cleaned data.
     # appley.save_drink_menu(transformed_drink_menu_data) # generate drinks menu
+    appley.save_location_menu(location_list) # generate drinks menu
+
  
     end_load = time.time()
     load_time = round(end_load - end_transform, 4)

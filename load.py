@@ -77,6 +77,19 @@ class Load():
     #     connection.commit()
     #     cursor.close()
 
+    def save_location_menu(self, location_list):
+        connection = self.get_connection()
+        logger.info(f"The number of unique drinks processed: {len(location_list)}")
+        for place in location_list:
+            args = (place)
+            print(args)
+            sql_query = "INSERT INTO location (location) VALUES (%s)"
+            try:
+                cursor = self.update_sql(sql_query, args, connection)
+            except Exception as error:
+                print(f"DOOP! {error}")
+        connection.commit()
+        cursor.close()
        
 def progress(percentage_progress):
     progress_bar = int(round(percentage_progress,0)) * "#"

@@ -23,9 +23,9 @@ class Check_IDs():
             rows_start = 1 # drink name, size, flava, price
             row_end = 4
             unique_id = 0
-        elif table_name == "location":
-            rows_starts = 1
-            row_ends = 2 # whatever makes the unique criteria
+        elif table_name == "locations":
+            rows_start = 1
+            row_end = 2 # whatever makes the unique criteria
             unique_id = 0
         return(unique_id, rows_start, row_end)
     
