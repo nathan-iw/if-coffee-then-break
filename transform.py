@@ -4,6 +4,7 @@ import time
 from extract import Extract
 import datetime
 from log import logger
+from check_ids import Check_IDs
 
 
 class Transform():
@@ -13,19 +14,22 @@ class Transform():
         return app.load_data() # Loads data from DB, returns "raw_data"
 
     def transform(self, raw_data): # needs test
+        id_instance = Check_IDs()
+        drink_dict = id_instance.load_ids("drink_menu")
+        print(f"Check IDs dict: {drink_dict}")
         transformed_data = [] # Clean list to populate with transformed data
-        drink_dict = {} # Clean dictionary to populate with split drink, size and flavour
         for row in raw_data:
             t_date, t_time = self.date_breaker(row[1])  # defines variables for split date and time from date breaker
             t_location = row[2] # taken directly from raw_data
             t_first_name, t_last_name = self.person_breaker(row[3]) # splits first name from customer name.
-            t_order = row[4] # taken directly from raw_data
-            t_drink_menu = self.get_drink_list(self.drink_breaker(row[4]), drink_dict)
+            # t_order = row[4] # taken directly from raw_data
+            t_drink_menu = self.order_loop(row[4], drink_dict)
+            # self.drink_splitter(self.drink_breaker(row[4]))
             # t_brok_flavour = self.flavour_breaker(self.drink_breaker(row[4]), drink_dict)
             t_price = int(float(row[5])*100)
             t_method = self.pay_method(row[6])
             t_card = self.card_masker(row[7])
-            transformed_data.append([t_date, t_time, t_location, t_first_name, t_last_name, t_order, t_price, t_method, t_card])
+            transformed_data.append([t_date, t_time, t_location, t_first_name, t_last_name, t_drink_menu, t_price, t_method, t_card])
         return (transformed_data, drink_dict)
 
     def drink_breaker(self, raw_order): # tested
@@ -51,6 +55,45 @@ class Transform():
         broken_flavour.append(drink) 
         broken_flavour.append(flavour) # broken flavour = [large americano, hazlenut: 1.40]
         return broken_flavour
+        
+    def order_loop(self, raw_orders, drink_dict):
+        basket = raw_orders.split(", ")
+        drinks_per_order = []
+        # basket = ["large armicano - Hazelnut: 1.40", "large armicano - Hazelnut: 1.40", "large armicano - Hazelnut: 1.40"]
+        for drink in basket: 
+            split_drink = self.drink_splitter(drink)
+            drink_id = self.get_drink_id(split_drink, drink_dict)
+            # self.drink_2_dict(split_drink, drink_dict) # add drink to menu
+            # check drink in dictionary to get ID - then append the ID in the next line
+            drinks_per_order.append(drink_id)
+        print(f"Drink IDs in basket: {drinks_per_order}")
+        
+    def get_drink_id(self, split_drink, drink_dict):
+        try:
+            drink_id = drink_dict[split_drink]
+            return drink_id
+        except Exception as err:
+            pass
+            
+    def drink_splitter(self, raw_drink): # tested ... Raw order is a list of strings
+        # "large armicano - Hazelnut: 1.40"
+        # If order contains ":" then contains a price, needs splitting.
+        drink_flav = self.flavour_breaker(raw_drink) # drink_flav = [large americano, hazlenut: 1.40]
+        if ": " in str(drink_flav[1]):
+            drink = drink_flav[0]
+            flavour_price = drink_flav[1].split(": ")
+            flavour = flavour_price[0]
+            # drink_price = int(100*float(flavour_price[1]))
+        else:
+            drink = drink_flav[0]
+            flavour = drink_flav[1]
+            # if flavour == None:
+            # flavour = "Orginal"
+            # print(flavour)
+            #  drink_price = None
+        drink = self.get_name(drink)
+        split_drink = (drink[1].strip(), drink[0], flavour)
+        return split_drink
 
     def get_name(self, drink):
         name_broken = []
@@ -66,27 +109,12 @@ class Transform():
                 drink_name = drink
                 drink_size = None
         return (drink_size,drink_name)
-            
-    def get_drink_list(self, raw_orders, drink_dict): # tested ... Raw order is a list of strings
-        for drink in raw_orders: # raw_orders = ["large armicano - Hazelnut: 1.40", "large armicano - Hazelnut: 1.40", "large armicano - Hazelnut: 1.40"]
-    # If order contains ":" then contains a price, needs splitting.
-            drink_flav = self.flavour_breaker(drink) # drink_flav = [large americano, hazlenut: 1.40]
-            if ": " in str(drink_flav[1]):
-                drink = drink_flav[0]
-                flavour_price = drink_flav[1].split(": ")
-                flavour = flavour_price[0]
-                drink_price = int(100*float(flavour_price[1]))
-            else:
-                drink = drink_flav[0]
-                flavour = drink_flav[1]
-                # if flavour == None:
-                #     flavour = "Orginal"
-                # print(flavour)
-                drink_price = None
-            drink = self.get_name(drink)
-            x = {(drink[1].strip(), drink[0], flavour):drink_price}
-            drink_dict.update(x)
-        return drink_dict
+
+    # def drink_2_dict(self, split_drink, drink_dict):
+    #     x = {(split_drink[0:3]):split_drink[3]}
+    #     drink_dict.update(x)
+    #     return drink_dict 
+        # (Drink name, drink size, drink flava): price
                       
     def date_breaker(self, date): # not tested
         split_date = date.date()

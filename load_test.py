@@ -58,7 +58,6 @@ class Load():
         logger.info(f"The number of unique drinks processed:{len(drink_dict)}")
         for key in drink_dict.items():
             args = (key[0][0], key[0][1], key[0][2], key[1])
-            print(args)
             sql_query = "INSERT INTO drink_menu (drink_name, drink_size, drink_flavour, price) VALUES (%s, %s, %s, %s)"
             try:
                 cursor = self.update_sql(sql_query, args, connection)
