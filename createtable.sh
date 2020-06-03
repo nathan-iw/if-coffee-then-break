@@ -13,6 +13,9 @@ ALTER TABLE drink_menu ADD drink_size VARCHAR(20) AFTER drink_name;
 
 ALTER TABLE drink_menu ADD drink_flavour VARCHAR(50) AFTER drink_size;
 
+ALTER TABLE drinks_menu
+ADD CONSTRAINT unique UNIQUE (drink_name,size,flavour);
+
 # Queries
 
 select drink_name, size, count(*) as drink_size_frequency from clean_transactions group by drink_name order by count(*) desc;
@@ -25,6 +28,7 @@ select drink_name, count(*) as drink_count from clean_transactions group by drin
 
 ALTER TABLE Orders
 ADD FOREIGN KEY (PersonID) REFERENCES Persons(PersonID);
+
 
 
 

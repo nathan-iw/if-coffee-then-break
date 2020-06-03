@@ -1,36 +1,43 @@
-# Extract
 import pymysql
 from os import environ
-import time
 from log import logger
 
-# logger = logging.getLogger(__name__) 
-
-class Extract():
+class Check_IDs():
 
     def get_connection(self):  # function to get the connection string using: pymysql.connect(host, username, password, database)
         try:
             db_connection = pymysql.connect(
-                environ.get("DB_HOST_SAINS"),  # host
-                environ.get("DB_USER_SAINS"),  # username
-                environ.get("DB_PW_SAINS"),  # password
-                environ.get("DB_NAME_SAINS")  # database
+                environ.get("DB_HOST2"),  # host
+                environ.get("DB_USER2"),  # username
+                environ.get("DB_PW2"),  # password
+                environ.get("DB_NAME2")  # database
             )
             logger.info("Connection successful LOL")
             return db_connection
         except Exception as error:
             logger.critical(f"Connection failed lol {error}")
-            (f"didn't work lol {error}")
+            print(f"didn't work lol {error}")
+
+    def table_unique_getter(self, table_name):
+        if table_name == "drink_menu":
+            rows_start = 1 # drink name, size, flava, price
+            row_end = 4
+            unique_id = 0
+        elif table_name == "location":
+            rows_starts = 1
+            row_ends = 2 # whatever makes the unique criteria
+            unique_id = 0
+        return(unique_id, rows_start, row_end)
     
-    def load_data(self):
-        raw_data = []
-        sql_string = f"SELECT * FROM transactions LIMIT 100"
+    def load_ids(self, table_name):
+        id_dict = {}
+        unique_id, row_start, row_end = self.table_unique_getter(table_name)
+        sql_string = f"SELECT * FROM {table_name}"
         data = self.sql_load_all(sql_string)
         for row in data:
-            raw_entry = row[0:8]
-            raw_data.append(raw_entry)
-        return raw_data
-    
+            id_dict[row[row_start:row_end]] = row[unique_id]
+        return id_dict
+
     def sql_load_all(self, sql_string):
         connection = self.get_connection()
         sql_load_list = []
@@ -46,6 +53,6 @@ class Extract():
                     sql_load_list.append(row)
             return(sql_load_list)
         except Exception as error:
-            (f"Unable to return all: \n{error}")
+            print(f"Unable to return all: \n{error}")
         finally:
             connection.close()

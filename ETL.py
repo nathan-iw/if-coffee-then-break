@@ -24,10 +24,10 @@ if __name__ == "__main__":
     transform_time = round(end_transform - end_extract,4)
     logger.info(f"Transform time: {transform_time}")
     print(f"Transform time: {transform_time}")
-    appley = Load()
+    # appley = Load()
 
-    appley.save_transaction(transformed_data) # populate RDS instance with cleaned data.
-    appley.save_drink_menu(transformed_drink_menu_data) # generate drinks menu
+    # appley.save_transaction(transformed_data) # populate RDS instance with cleaned data.
+    # appley.save_drink_menu(transformed_drink_menu_data) # generate drinks menu
  
     end_load = time.time()
     load_time = round(end_load - end_transform, 4)
