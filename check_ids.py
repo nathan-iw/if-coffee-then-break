@@ -20,22 +20,20 @@ class Check_IDs():
 
     def table_unique_getter(self, table_name):
         if table_name == "drink_menu":
-            rows_start = 1 # drink name, size, flava, price
-            row_end = 4
-            unique_id = 0
+            string = "id_dict[row[1:4]] = row[0]"
         elif table_name == "locations":
-            rows_start = 1
-            row_end = 2 # whatever makes the unique criteria
-            unique_id = 0
-        return(unique_id, rows_start, row_end)
+            string = "id_dict[row[1]] = row[0]"
+        elif table_name == "pii":
+            string = "id_dict[row[1]] = row[0]"
+        return(string)
     
     def load_ids(self, table_name):
         id_dict = {}
-        unique_id, row_start, row_end = self.table_unique_getter(table_name)
+        string = self.table_unique_getter(table_name)
         sql_string = f"SELECT * FROM {table_name}"
         data = self.sql_load_all(sql_string)
         for row in data:
-            id_dict[row[row_start:row_end]] = row[unique_id]
+            exec(string)
         return id_dict
 
     def sql_load_all(self, sql_string):

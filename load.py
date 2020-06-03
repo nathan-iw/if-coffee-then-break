@@ -49,7 +49,6 @@ class Load():
         index = 0
         for t in transformed_list:
             args = t[0:9]
-            str1 = ''.join(t[5])
             sql_query = "INSERT INTO clean_transactions (date, transaction_time, location, firstname, lastname, drink_order, total_price, method, ccn) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)"
             cursor = self.update_sql(sql_query, args, connection)
             if index %10 == 0 and index != 0:
@@ -83,7 +82,7 @@ class Load():
         for place in location_list:
             args = (place)
             print(args)
-            sql_query = "INSERT INTO location (location) VALUES (%s)"
+            sql_query = "INSERT INTO locations (location) VALUES (%s)"
             try:
                 cursor = self.update_sql(sql_query, args, connection)
             except Exception as error:
