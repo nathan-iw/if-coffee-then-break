@@ -15,12 +15,15 @@ class Transform():
 
     def transform(self, raw_data): # needs test
         id_instance = Check_IDs()
+        location_list = []
         drink_dict = id_instance.load_ids("drink_menu")
+        location_dict = id_instance.load_ids("locations")
         print(f"Check IDs dict: {drink_dict}")
         transformed_data = [] # Clean list to populate with transformed data
         for row in raw_data:
             t_date, t_time = self.date_breaker(row[1])  # defines variables for split date and time from date breaker
             t_location = row[2] # taken directly from raw_data
+            self.location_adder(row[2], location_list)
             t_first_name, t_last_name = self.person_breaker(row[3]) # splits first name from customer name.
             # t_order = row[4] # taken directly from raw_data
             t_drink_menu = self.order_loop(row[4], drink_dict)
@@ -30,8 +33,20 @@ class Transform():
             t_method = self.pay_method(row[6])
             t_card = self.card_masker(row[7])
             transformed_data.append([t_date, t_time, t_location, t_first_name, t_last_name, t_drink_menu, t_price, t_method, t_card])
-        return (transformed_data, drink_dict)
+        print(location_list)
+        return (transformed_data, drink_dict, location_list)
 
+    def location_adder(self, location, location_list):
+        location_list.append(location)
+        return(location_list)
+
+    def location_id_getter(self, location, location_dict):
+        try:
+            location_id = location_dict[location]
+            return location_id
+        except Exception as err:
+            pass
+        
     def drink_breaker(self, raw_order): # tested
         dirty_order = raw_order.split(", ") # 
         clean_order = []

@@ -16,6 +16,8 @@ ALTER TABLE drink_menu ADD drink_flavour VARCHAR(50) AFTER drink_size;
 ALTER TABLE drinks_menu
 ADD CONSTRAINT unique UNIQUE (drink_name,size,flavour);
 
+ALTER TABLE locations ADD ids INT(AUTO_INCREMENT NOT NULL) AFTER id; 
+
 # Queries
 
 select drink_name, size, count(*) as drink_size_frequency from clean_transactions group by drink_name order by count(*) desc;
