@@ -9,8 +9,6 @@ import time
 
 
 
-
-
 class Load():
     def get_connection(self):  # function to get the connection string using: pymysql.connect(host, username, password, database)
         if environ.get("ENVIRONMENT") == "prod":
@@ -62,19 +60,19 @@ class Load():
         connection.commit()
         cursor.close()
 
-    # def save_drink_menu(self, drink_dict):
-    #     connection = self.get_connection()
-    #     logger.info(f"The number of unique drinks processed: {len(drink_dict)}")
-    #     for key in drink_dict.items():
-    #         args = (key[0][0], key[0][1], key[0][2], key[1])
-    #         print(args)
-    #         sql_query = "INSERT INTO drink_menu (drink_name, drink_size, drink_flavour, price) VALUES (%s, %s, %s, %s)"
-    #         try:
-    #             cursor = self.update_sql(sql_query, args, connection)
-    #         except Exception as error:
-    #             print(f"DOOP! {error}")
-    #     connection.commit()
-    #     cursor.close()
+    def save_drink_menu(self, drink_dict):
+        connection = self.get_connection()
+        logger.info(f"The number of unique drinks processed: {len(drink_dict)}")
+        for key in drink_dict.items():
+            args = (key[0][0], key[0][1], key[0][2], key[1])
+            print(args)
+            sql_query = "INSERT INTO drink_menu (drink_name, drink_size, drink_flavour, price) VALUES (%s, %s, %s, %s)"
+            try:
+                cursor = self.update_sql(sql_query, args, connection)
+            except Exception as error:
+                print(f"DOOP! {error}")
+        connection.commit()
+        cursor.close()
 
     def save_location_menu(self, location_list):
         connection = self.get_connection()

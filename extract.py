@@ -24,7 +24,7 @@ class Extract():
     
     def load_data(self):
         raw_data = []
-        sql_string = f"SELECT * FROM transactions ORDER BY Date DESC LIMIT 10"
+        sql_string = f"SELECT * FROM transactions ORDER BY Date DESC LIMIT 1000"
         data = self.sql_load_all(sql_string)
         for row in data:
             raw_entry = row[0:8]
