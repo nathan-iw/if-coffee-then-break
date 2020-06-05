@@ -24,6 +24,7 @@ class Transform():
         for row in raw_data:
             t_date, t_time = self.date_breaker(row[1])  # defines variables for split date and time from date breaker
             # t_location = row[2] # taken directly from raw_data
+            print(row[2])
             location_id = self.location_id_getter(row[2], location_dict)
             # self.location_adder(row[2], location_list)
             t_first_name, t_last_name = self.person_breaker(row[3]) # splits first name from customer name.
@@ -55,7 +56,7 @@ class Transform():
     def location_id_getter(self, location, location_dict):        
         try:
             location_id = location_dict[location]
-            print(f"{location_id} - {location}")
+            print(f"Location: {location_id} - {location}")
             return (location_id)
         except Exception as err:
             pass
@@ -137,7 +138,7 @@ class Transform():
                 drink_size = "Regular"
             except:
                 drink_name = drink
-                drink_size = None
+                drink_size = "-"
         return (drink_size,drink_name)
 
     # def drink_2_dict(self, split_drink, drink_dict):
