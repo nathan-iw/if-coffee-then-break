@@ -49,7 +49,7 @@ class Load():
         index = 0
         for t in transformed_list:
             args = t[0:9]
-            sql_query = "INSERT INTO clean_transactions (date, transaction_time, location, firstname, lastname, drink_order, total_price, method, ccn) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)"
+            sql_query = "INSERT INTO clean_transactions (id, date, transaction_time, location, firstname, lastname, total_price, method, ccn) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)"
             cursor = self.update_sql(sql_query, args, connection)
             if index %10 == 0 and index != 0:
                 t2 = time.time()
@@ -59,6 +59,19 @@ class Load():
                 time_remaining = total_time_estimate - current_load_time
                 print(f"Progress: {progress(percentage)} [{percentage}%] Estimated time remaining: {round(time_remaining,2)} seconds", end="\r")
             index += 1
+        connection.commit()
+        cursor.close()
+
+    def save_basket(self, basket_dict):
+        connection = self.get_connection()
+        for key, value in basket_dict.items():
+            args = (str(key), value)
+            print(args)
+            sql_query = "INSERT INTO basket (trans_id, drink_id) VALUES (%s, %s)"
+            try:
+                cursor = self.update_sql(sql_query, args, connection)
+            except Exception as error:
+                print(f"DOOP! {error}")
         connection.commit()
         cursor.close()
 

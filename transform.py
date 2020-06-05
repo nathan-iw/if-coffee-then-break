@@ -5,7 +5,7 @@ from extract import Extract
 import datetime
 from log import logger
 from check_ids import Check_IDs
-
+import uuid
 # Ahoy
 
 class Transform():
@@ -17,9 +17,9 @@ class Transform():
     def transform(self, raw_data): # needs test
         id_instance = Check_IDs()
         location_list = []
+        basket_dict = {}
         drink_dict = id_instance.load_ids("drink_menu")
         location_dict = id_instance.load_ids("locations")
-        print(location_dict)
         transformed_data = [] # Clean list to populate with transformed data
         for row in raw_data:
             t_date, t_time = self.date_breaker(row[1])  # defines variables for split date and time from date breaker
@@ -34,8 +34,19 @@ class Transform():
             t_price = int(float(row[5])*100)
             t_method = self.pay_method(row[6])
             t_card = self.card_masker(row[7])
-            transformed_data.append([t_date, t_time, location_id, t_first_name, t_last_name, drink_ids, t_price, t_method, t_card])
-        return (transformed_data, drink_dict, location_list)
+            trans_id = self.id_generator()
+            filled_basket = self.basket_generator(trans_id, drink_ids, basket_dict)
+            transformed_data.append([trans_id, t_date, t_time, location_id, t_first_name, t_last_name, t_price, t_method, t_card])
+        return (transformed_data, drink_dict, location_dict, filled_basket)
+
+    def id_generator(self):
+        return str(uuid.uuid1())
+
+    def basket_generator(self, trans_id, drink_id_list, basket_dict):
+        for drink in drink_id_list:
+            basket_dict[trans_id] = drink
+        print(basket_dict)
+        return basket_dict
 
     def location_adder(self, location, location_list):
         location_list.append(location)
