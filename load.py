@@ -47,7 +47,7 @@ class Load():
         index = 0
         for t in transformed_list:
             args = t[0:9]
-            sql_query = "INSERT INTO clean_transactions (date, transaction_time, location, firstname, lastname, drink_order, total_price, method, ccn) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)"
+            sql_query = "INSERT INTO clean_transactions (id, date, transaction_time, location, firstname, lastname, total_price, method, ccn) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)"
             cursor = self.update_sql(sql_query, args, connection)
             if index %10 == 0 and index != 0:
                 t2 = time.time()
@@ -60,6 +60,7 @@ class Load():
         connection.commit()
         cursor.close()
 
+
     def save_drink_menu(self, drink_dict):
         connection = self.get_connection()
         logger.info(f"The number of unique drinks processed: {len(drink_dict)}")
@@ -67,12 +68,37 @@ class Load():
             args = (key[0][0], key[0][1], key[0][2], key[1])
             print(args)
             sql_query = "INSERT INTO drink_menu (drink_name, drink_size, drink_flavour, price) VALUES (%s, %s, %s, %s)"
+
+    def save_basket(self, basket_dict):
+        connection = self.get_connection()
+        for key, value in basket_dict.items():
+            args = (str(key), value)
+            print(args)
+            sql_query = "INSERT INTO basket (trans_id, drink_id) VALUES (%s, %s)"
+
             try:
                 cursor = self.update_sql(sql_query, args, connection)
             except Exception as error:
                 print(f"DOOP! {error}")
         connection.commit()
         cursor.close()
+
+
+
+#     def save_drink_menu(self, drink_dict):
+#         connection = self.get_connection()
+#         logger.info(f"The number of unique drinks processed: {len(drink_dict)}")
+#         for key in drink_dict.items():
+#             args = (key[0][0], key[0][1], key[0][2], key[1])
+#             print(args)
+#             sql_query = "INSERT INTO drink_menu (drink_name, drink_size, drink_flavour, price) VALUES (%s, %s, %s, %s)"
+#             try:
+#                 cursor = self.update_sql(sql_query, args, connection)
+#             except Exception as error:
+#                 print(f"DOOP! {error}")
+#         connection.commit()
+#         cursor.close()
+
 
     def save_location_menu(self, location_list):
         connection = self.get_connection()
