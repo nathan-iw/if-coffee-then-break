@@ -30,7 +30,7 @@ class Transform():
             t_first_name, t_last_name = self.person_breaker(row[3]) # splits first name from customer name.
             # t_order = row[4] # taken directly from raw_data
             drink_ids = self.order_loop(row[4], drink_dict)
-            # self.drink_splitter(self.drink_breaker(row[4]))
+            self.drink_splitter(self.drink_breaker(row[4]))
             # t_brok_flavour = self.flavour_breaker(self.drink_breaker(row[4]), drink_dict)
             t_price = int(float(row[5])*100)
             t_method = self.pay_method(row[6])
@@ -92,7 +92,7 @@ class Transform():
         for drink in basket: 
             split_drink = self.drink_splitter(drink)
             drink_id = self.get_drink_id(split_drink, drink_dict)
-            # self.drink_2_dict(split_drink, drink_dict) # add drink to menu
+            self.drink_2_dict(split_drink, drink_dict) # add drink to menu
             # check drink in dictionary to get ID - then append the ID in the next line
             drinks_per_order.append(drink_id)
         print(f"Basket: {drinks_per_order}")
@@ -111,24 +111,24 @@ class Transform():
         # If order contains ":" then contains a price, needs splitting.
         drink_flav = self.flavour_breaker(raw_drink) # drink_flav = [large americano, hazlenut: 1.40]
         if ": " in str(drink_flav[1]):
-            drink = drink_flav[0]
+            drink = drink_flav[0].strip()
             flavour_price = drink_flav[1].split(": ")
             flavour = flavour_price[0]
-            # drink_price = int(100*float(flavour_price[1]))
+            drink_price = int(100*float(flavour_price[1]))
         else:
             drink = drink_flav[0]
             flavour = drink_flav[1]
             # if flavour == None:
             # flavour = "Orginal"
             # print(flavour)
-            #  drink_price = None
+            drink_price = 0
         drink = self.get_name(drink)
-        split_drink = (drink[1].strip(), drink[0], flavour)
+        split_drink = (drink[1], drink[0], flavour, drink_price)
         return split_drink
 
     def get_name(self, drink):
         name_broken = []
-        drink_size = None
+        drink_size = "N/A"
         if "Large" in drink:
             drink_size = "Large"
             drink_name = drink.split("Large ")[1]
@@ -138,15 +138,15 @@ class Transform():
                 drink_size = "Regular"
             except:
                 drink_name = drink
-                drink_size = "-"
-        return (drink_size,drink_name)
+                drink_size = "N/A"
+        return (drink_size, drink_name)
 
-    # def drink_2_dict(self, split_drink, drink_dict):
-    #     x = {(split_drink[0:3]):split_drink[3]}
-    #     drink_dict.update(x)
-    #     return drink_dict 
+    def drink_2_dict(self, split_drink, drink_dict):
+        x = {(split_drink[0:3]): split_drink[3]}
+        drink_dict.update(x)
+        return drink_dict
         # (Drink name, drink size, drink flava): price
-                      
+
     def date_breaker(self, date): # not tested
         split_date = date.date()
         split_time = date.time()

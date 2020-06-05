@@ -24,8 +24,9 @@ class Extract():
     
     def load_all_data(self):
         raw_data = []
-        sql_string = f"SELECT * FROM transactions LIMIT 10"
-        data = self.sql_load(sql_string)
+
+        sql_string = f"SELECT * FROM transactions ORDER BY Date DESC LIMIT 1000"
+        data = self.sql_load_all(sql_string)
         for row in data:
             raw_entry = row[0:8]
             raw_data.append(raw_entry)
@@ -38,6 +39,7 @@ class Extract():
         print(yesterday)
         sql_string = f"SELECT * FROM transactions WHERE Date >= '{yesterday} 00:00:01'  and Date <= '{yesterday} 23:59:59' LIMIT 10"
         data = self.sql_load(sql_string)
+
         for row in data:
             raw_entry = row[0:8]
             raw_data.append(raw_entry)
