@@ -12,7 +12,8 @@ if __name__ == "__main__":
     logger.info("application ran")
     start = time.time()
     app = Extract()
-    raw_data_list = app.load_data() # extract output 
+    raw_data_list = app.load_yesterdays_data() # extract output from yesterday
+    # raw_data_list = app.load_all_data()  # extract output from all time
     end_extract = time.time()
     extract_time = round(end_extract - start, 4)
     print(f"Extract time: {extract_time}")
@@ -26,8 +27,8 @@ if __name__ == "__main__":
     print(f"Transform time: {transform_time}")
     appley = Load()
 
-    # appley.save_transaction(transformed_data) # populate RDS instance with cleaned data.
-    # appley.save_drink_menu(transformed_drink_menu_data) # generate drinks menu
+    appley.save_transaction(transformed_data) # populate RDS instance with cleaned data.
+    appley.save_drink_menu(transformed_drink_menu_data) # generate drinks menu
     # appley.save_location_menu(location_list) # generate drinks menu
 
  
