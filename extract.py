@@ -37,9 +37,8 @@ class Extract():
         today = datetime.date.today()
         yesterday = today - datetime.timedelta(days=1)
         print(yesterday)
-        sql_string = f"SELECT * FROM transactions WHERE Date >= '{yesterday} 00:00:01'  and Date <= '{yesterday} 23:59:59' LIMIT 10"
+        sql_string = f"SELECT * FROM transactions WHERE Date >= '{yesterday} 00:00:01'  and Date <= '{yesterday} 23:59:59' LIMIT 50"
         data = self.sql_load(sql_string)
-
         for row in data:
             raw_entry = row[0:8]
             raw_data.append(raw_entry)

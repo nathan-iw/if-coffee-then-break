@@ -60,7 +60,6 @@ class Load():
         connection.commit()
         cursor.close()
 
-
     def save_drink_menu(self, drink_dict):
         connection = self.get_connection()
         logger.info(f"The number of unique drinks processed: {len(drink_dict)}")
@@ -72,18 +71,15 @@ class Load():
     def save_basket(self, basket_dict):
         connection = self.get_connection()
         for key, value in basket_dict.items():
-            args = (str(key), value)
-            print(args)
-            sql_query = "INSERT INTO basket (trans_id, drink_id) VALUES (%s, %s)"
-
-            try:
-                cursor = self.update_sql(sql_query, args, connection)
-            except Exception as error:
-                print(f"DOOP! {error}")
+            for drink in value:
+                args = (key, drink)
+                sql_query = "INSERT INTO basket (trans_id, drink_id) VALUES (%s, %s)"
+                try:
+                    cursor = self.update_sql(sql_query, args, connection)
+                except Exception as error:
+                    logger.critical(f"DOOP! {error}")
         connection.commit()
         cursor.close()
-
-
 
 #     def save_drink_menu(self, drink_dict):
 #         connection = self.get_connection()
@@ -105,12 +101,12 @@ class Load():
         logger.info(f"The number of unique drinks processed: {len(location_list)}")
         for place in location_list:
             args = (place)
-            print(args)
+            # print(args)
             sql_query = "INSERT INTO locations (location) VALUES (%s)"
             try:
                 cursor = self.update_sql(sql_query, args, connection)
             except Exception as error:
-                print(f"DOOP! {error}")
+                logger.critical(f"DOOP! {error}")
         connection.commit()
         cursor.close()
        

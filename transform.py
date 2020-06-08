@@ -19,12 +19,12 @@ class Transform():
         location_list = []
         basket_dict = {}
         drink_dict = id_instance.load_ids("drink_menu")
+        print(drink_dict)
         location_dict = id_instance.load_ids("locations")
         transformed_data = [] # Clean list to populate with transformed data
         for row in raw_data:
             t_date, t_time = self.date_breaker(row[1])  # defines variables for split date and time from date breaker
             # t_location = row[2] # taken directly from raw_data
-            print(row[2])
             location_id = self.location_id_getter(row[2], location_dict)
             # self.location_adder(row[2], location_list)
             t_first_name, t_last_name = self.person_breaker(row[3]) # splits first name from customer name.
@@ -44,9 +44,7 @@ class Transform():
         return str(uuid.uuid1())
 
     def basket_generator(self, trans_id, drink_id_list, basket_dict):
-        for drink in drink_id_list:
-            basket_dict[trans_id] = drink
-        print(basket_dict)
+        basket_dict[trans_id] = drink_id_list
         return basket_dict
 
     def location_adder(self, location, location_list):
@@ -91,17 +89,15 @@ class Transform():
         # basket = ["large armicano - Hazelnut: 1.40", "large armicano - Hazelnut: 1.40", "large armicano - Hazelnut: 1.40"]
         for drink in basket: 
             split_drink = self.drink_splitter(drink)
-            drink_id = self.get_drink_id(split_drink, drink_dict)
-            self.drink_2_dict(split_drink, drink_dict) # add drink to menu
+            drink_id = self.get_drink_id(split_drink[0:3], drink_dict)
+            # self.drink_2_dict(split_drink, drink_dict) # add drink to menu
             # check drink in dictionary to get ID - then append the ID in the next line
             drinks_per_order.append(drink_id)
-        print(f"Basket: {drinks_per_order}")
         return(drinks_per_order)
         
     def get_drink_id(self, split_drink, drink_dict):
         try:
             drink_id = drink_dict[split_drink]
-            print(f"{drink_id} - {split_drink}")
             return (drink_id)
         except Exception as err:
             pass
