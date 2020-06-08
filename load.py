@@ -7,9 +7,8 @@ from Secrets import get_secret
 from log import logger
 import time
 
-
-
 class Load():
+    
     def get_connection(self):  # function to get the connection string using: pymysql.connect(host, username, password, database)
         if environ.get("ENVIRONMENT") == "prod":
             host, username, password, db_name = get_secret()[0:5]

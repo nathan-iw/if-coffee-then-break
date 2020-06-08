@@ -19,13 +19,13 @@ class Transform():
         location_list = []
         basket_dict = {}
         drink_dict = id_instance.load_ids("drink_menu")
-        print(drink_dict)
         location_dict = id_instance.load_ids("locations")
         transformed_data = [] # Clean list to populate with transformed data
         for row in raw_data:
+            trans_id = self.id_generator()
             t_date, t_time = self.date_breaker(row[1])  # defines variables for split date and time from date breaker
             # t_location = row[2] # taken directly from raw_data
-            location_id = self.location_id_getter(row[2], location_dict)
+            location_id = self.get_id(row[2], location_dict)
             # self.location_adder(row[2], location_list)
             t_first_name, t_last_name = self.person_breaker(row[3]) # splits first name from customer name.
             # t_order = row[4] # taken directly from raw_data
@@ -35,10 +35,11 @@ class Transform():
             t_price = int(float(row[5])*100)
             t_method = self.pay_method(row[6])
             t_card = self.card_masker(row[7])
-            trans_id = self.id_generator()
             filled_basket = self.basket_generator(trans_id, drink_ids, basket_dict)
             transformed_data.append([trans_id, t_date, t_time, location_id, t_first_name, t_last_name, t_price, t_method, t_card])
-        return (transformed_data, drink_dict, location_dict, filled_basket)
+        # return (transformed_data, drink_dict, location_dict, filled_basket)
+        
+        return (transformed_data, filled_basket)
 
     def id_generator(self):
         return str(uuid.uuid1())
@@ -50,14 +51,6 @@ class Transform():
     def location_adder(self, location, location_list):
         location_list.append(location)
         return(location_list)
-
-    def location_id_getter(self, location, location_dict):        
-        try:
-            location_id = location_dict[location]
-            print(f"Location: {location_id} - {location}")
-            return (location_id)
-        except Exception as err:
-            pass
         
     def drink_breaker(self, raw_order): # tested
         dirty_order = raw_order.split(", ") # 
@@ -87,18 +80,19 @@ class Transform():
         basket = raw_orders.split(", ")
         drinks_per_order = []
         # basket = ["large armicano - Hazelnut: 1.40", "large armicano - Hazelnut: 1.40", "large armicano - Hazelnut: 1.40"]
-        for drink in basket: 
+        for drink in basket:
+            print(f"DRINK IN BASKET: {drink}") 
             split_drink = self.drink_splitter(drink)
-            drink_id = self.get_drink_id(split_drink[0:3], drink_dict)
+            drink_id = self.get_id(split_drink[0:3], drink_dict)
             # self.drink_2_dict(split_drink, drink_dict) # add drink to menu
             # check drink in dictionary to get ID - then append the ID in the next line
             drinks_per_order.append(drink_id)
         return(drinks_per_order)
         
-    def get_drink_id(self, split_drink, drink_dict):
+    def get_id(self, split_item, item_dict): # functions for drink OR location
         try:
-            drink_id = drink_dict[split_drink]
-            return (drink_id)
+            found_id = item_dict[split_item]
+            return (found_id)
         except Exception as err:
             pass
             
@@ -120,9 +114,12 @@ class Transform():
             drink_price = 0
         drink = self.get_name(drink)
         split_drink = (drink[1], drink[0], flavour, drink_price)
+        print(f"SPLIT DRINK: {split_drink}")
+
         return split_drink
 
     def get_name(self, drink):
+        print(f"drink is {drink}")
         name_broken = []
         drink_size = "N/A"
         if "Large" in drink:
@@ -135,6 +132,7 @@ class Transform():
             except:
                 drink_name = drink
                 drink_size = "N/A"
+        print(f"SIZE/ NAME: {drink_size, drink_name}")
         return (drink_size, drink_name)
 
     def drink_2_dict(self, split_drink, drink_dict):
