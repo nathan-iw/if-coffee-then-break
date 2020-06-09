@@ -39,29 +39,35 @@ jobs:
         DB_USER_SAINS: ${{ secrets.DEV_USER }}
         DB_PW_SAINS: ${{ secrets.DEV_PW }}
         DB_NAME_SAINS: ${{ secrets.DEV_DB_NAME }}
+        DB_HOST2: ${{ secrets.DEV_HOST2 }}
+        DB_USER2: ${{ secrets.DEV_USER2 }}
+        DB_PW2: ${{ secrets.DEV_PW2 }}
+        DB_NAME2: ${{ secrets.DEV_DB_NAME2 }}
 
     - name: run unittest
-      shell: bash
-
-        
+      shell: bash  
       run: |
         python3 -m unittest
-        
       env:
         DB_HOST_SAINS: ${{ secrets.DEV_HOST }}
         DB_USER_SAINS: ${{ secrets.DEV_USER }}
         DB_PW_SAINS: ${{ secrets.DEV_PW }}
         DB_NAME_SAINS: ${{ secrets.DEV_DB_NAME }}
-        
-      
+        DB_HOST2: ${{ secrets.DEV_HOST2 }}
+        DB_USER2: ${{ secrets.DEV_USER2 }}
+        DB_PW2: ${{ secrets.DEV_PW2 }}
+        DB_NAME2: ${{ secrets.DEV_DB_NAME2 }}  
           
-
     - name: run coverage
       env:
         DB_HOST_SAINS: ${{ secrets.DEV_HOST }}
         DB_USER_SAINS: ${{ secrets.DEV_USER }}
         DB_PW_SAINS: ${{ secrets.DEV_PW }}
         DB_NAME_SAINS: ${{ secrets.DEV_DB_NAME }}
+        DB_HOST2: ${{ secrets.DEV_HOST2 }}
+        DB_USER2: ${{ secrets.DEV_USER2 }}
+        DB_PW2: ${{ secrets.DEV_PW2 }}
+        DB_NAME2: ${{ secrets.DEV_DB_NAME2 }}
       run: |
         coverage run -m unittest
         coverage report      
