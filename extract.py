@@ -65,4 +65,4 @@ class Extract():
         except Exception as error:
             (f"Unable to return all: \n{error}")
         finally:
-            connection.close()
+            connection.close()        
