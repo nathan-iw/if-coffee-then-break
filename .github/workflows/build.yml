@@ -31,21 +31,19 @@ jobs:
         pip install flake8 pytest
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
 
-
-    - name: list_variables
-      run: echo $DB_USER $DB_HOST_SAINS $DB_PW_SAINS $DB_NAME_SAINS
-      env:
-        DB_HOST_SAINS: ${{ secrets.DEV_HOST }}
-        DB_USER_SAINS: ${{ secrets.DEV_USER }}
-        DB_PW_SAINS: ${{ secrets.DEV_PW }}
-        DB_NAME_SAINS: ${{ secrets.DEV_DB_NAME }}
-        DB_HOST2: ${{ secrets.DEV_HOST2 }}
-        DB_USER2: ${{ secrets.DEV_USER2 }}
-        DB_PW2: ${{ secrets.DEV_PW2 }}
-        DB_NAME2: ${{ secrets.DEV_DB_NAME2 }}
+    # - name: list_variables
+    #   run: echo $DB_USER $DB_HOST_SAINS $DB_PW_SAINS $DB_NAME_SAINS
+    #   env:
+    #     DB_HOST_SAINS: ${{ secrets.DEV_HOST }}
+    #     DB_USER_SAINS: ${{ secrets.DEV_USER }}
+    #     DB_PW_SAINS: ${{ secrets.DEV_PW }}
+    #     DB_NAME_SAINS: ${{ secrets.DEV_DB_NAME }}
+    #     DB_HOST2: ${{ secrets.DEV_HOST2 }}
+    #     DB_USER2: ${{ secrets.DEV_USER2 }}
+    #     DB_PW2: ${{ secrets.DEV_PW2 }}
+    #     DB_NAME2: ${{ secrets.DEV_DB_NAME2 }}
 
     - name: run unittest
-      shell: bash  
       run: |
         python3 -m unittest
       env:
