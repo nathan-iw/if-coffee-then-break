@@ -31,8 +31,7 @@ jobs:
         pip install flake8 pytest
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
     - name: run unittest
-    - shell: bash
-
+      shell: bash
       env:
         DB_HOST_SAINS: ${{ secrets.DEV_HOST }}
         DB_USER_SAINS: ${{ secrets.DEV_USER }}
