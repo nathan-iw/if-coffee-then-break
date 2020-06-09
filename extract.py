@@ -10,6 +10,10 @@ class Extract():
 
     def get_connection(self):  # function to get the connection string using: pymysql.connect(host, username, password, database)
         try:
+            print("env_var db_host_sains = " + environ.get("DB_HOST_SAINS"))
+            print(environ.get("DB_USER_SAINS"))
+            print(environ.get("DB_PW_SAINS"))
+            print(environ.get("DB_NAME_SAINS"))
             db_connection = pymysql.connect(
                 environ.get("DB_HOST_SAINS"),  # host
                 environ.get("DB_USER_SAINS"),  # username
