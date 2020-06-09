@@ -35,7 +35,15 @@ jobs:
         DB_USER_SAINS: ${{ secrets.DEV_USER }}
         DB_PW_SAINS: ${{ secrets.DEV_PW }}
         DB_NAME_SAINS: ${{ secrets.DEV_DB_NAME }}
-      run: python3 -m unittest  
+        
+        
+      run: |
+        export DB_HOST_SAINS="$DB_HOST_SAINS"
+        export DB_USER_SAINS="$DB_USER_SAINS"
+        export DB_PW_SAINS="$DB_PW_SAINS"
+        export DB_NAME_SAINS="$DB_NAME_SAINS"
+        python3 -m unittest  
+        
 
     - name: run coverage
       env:
