@@ -69,3 +69,6 @@ jobs:
       run: |
         coverage run -m unittest
         coverage report      
+
+    - name: Lint with flake8
+      run: flake8 .
