@@ -3,8 +3,6 @@ name: CI # name of the job
 # Controls when the action will run. Triggers the workflow on pull request
 # events but only for the master branch
 on:
-  push:
-    # branches: [*] # will only run on branch that starts feature/
   pull_request:
     branches: [ master ] # will only run when requesting pull on master
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
@@ -70,5 +68,5 @@ jobs:
         coverage run -m unittest
         coverage report      
 
-    - name: Lint with flake8
-      run: flake8 .
+    # - name: Lint with flake8
+    #   run: flake8 .
