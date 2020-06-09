@@ -30,8 +30,19 @@ jobs:
         pip install flake8 pytest
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
     - name: run unittest
+      env:
+        DB_HOST_SAINS: ${{ secrets.DEV_HOST }}
+        DB_USER_SAINS: ${{ secrets.DEV_USER }}
+        DB_PW_SAINS: ${{ secrets.DEV_PW }}
+        DB_NAME_SAINS: ${{ secrets.DEV_DB_NAME }}
       run: python3 -m unittest  
+
     - name: run coverage
+      env:
+        DB_HOST_SAINS: ${{ secrets.DEV_HOST }}
+        DB_USER_SAINS: ${{ secrets.DEV_USER }}
+        DB_PW_SAINS: ${{ secrets.DEV_PW }}
+        DB_NAME_SAINS: ${{ secrets.DEV_DB_NAME }}
       run: |
         coverage run -m unittest
         coverage report      
