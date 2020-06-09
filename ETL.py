@@ -31,7 +31,7 @@ if __name__ == "__main__":
     # appley.save_transaction(transformed_data) # populate RDS instance with cleaned data.
     # appley.save_drink_menu(transformed_drink_menu_data) # generate drinks menu
     # appley.save_location_menu(location_list) # generate drinks menu
-    appley.save_basket(basket) # generate drinks menu
+    # appley.save_basket(basket) # generate drinks menu
 
 
     end_load = time.time()
