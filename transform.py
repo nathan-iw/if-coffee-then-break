@@ -10,10 +10,6 @@ import uuid
 
 class Transform():
 
-    def get_raw_data(self):
-        app = Extract()
-        return app.load_data() # Loads data from DB, returns "raw_data"
-
     def transform(self, raw_data): # needs test
         id_instance = Check_IDs()
         location_list = []
@@ -38,7 +34,6 @@ class Transform():
             filled_basket = self.basket_generator(trans_id, drink_ids, basket_dict)
             transformed_data.append([trans_id, t_date, t_time, location_id, t_first_name, t_last_name, t_price, t_method, t_card])
         # return (transformed_data, drink_dict, location_dict, filled_basket)
-        
         return (transformed_data, filled_basket)
 
     def id_generator(self):
@@ -81,7 +76,6 @@ class Transform():
         drinks_per_order = []
         # basket = ["large armicano - Hazelnut: 1.40", "large armicano - Hazelnut: 1.40", "large armicano - Hazelnut: 1.40"]
         for drink in basket:
-            print(f"DRINK IN BASKET: {drink}") 
             split_drink = self.drink_splitter(drink)
             drink_id = self.get_id(split_drink[0:3], drink_dict)
             # self.drink_2_dict(split_drink, drink_dict) # add drink to menu
@@ -114,12 +108,10 @@ class Transform():
             drink_price = 0
         drink = self.get_name(drink)
         split_drink = (drink[1], drink[0], flavour, drink_price)
-        print(f"SPLIT DRINK: {split_drink}")
 
         return split_drink
 
     def get_name(self, drink):
-        print(f"drink is {drink}")
         name_broken = []
         drink_size = "N/A"
         if "Large" in drink:
@@ -132,7 +124,6 @@ class Transform():
             except:
                 drink_name = drink
                 drink_size = "N/A"
-        print(f"SIZE/ NAME: {drink_size, drink_name}")
         return (drink_size, drink_name)
 
     def drink_2_dict(self, split_drink, drink_dict):

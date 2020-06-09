@@ -117,7 +117,6 @@ class TransformTests(unittest.TestCase):
         mock_entry = [[1, datetime.datetime(2020, 5, 18, 15, 46, 1), "Isle of Wight", 'Oscar Ohara', 'Frappes - Chocolate Cookie', 2.75, 'CASH', None]]
         expected = ([[1, datetime.date(2020, 5, 18), datetime.time(15, 46, 1), 1, 'Oscar', 'Ohara', 275, 'CASH', None]],{1: [1]})
         actual = self.app.transform(mock_entry)
-        print(actual)
         self.assertEqual(actual, expected)
 
     def test_get_id_drink(self):
@@ -154,8 +153,6 @@ class TransformTests(unittest.TestCase):
         expected_outcome = ('N/A', ['Large Espresso: 1.8', 'Frappes - Coffee: 2.75', 'Large Espresso: 1.8', 'Frappes - Chocolate Cookie: 2.75'])
         actual_outcome = self.app.get_name(mock_drink)
         self.assertEqual(expected_outcome, actual_outcome)
-
-
 
 
 if __name__ == '__main__':

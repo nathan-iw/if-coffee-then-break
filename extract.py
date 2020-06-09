@@ -10,6 +10,10 @@ class Extract():
 
     def get_connection(self):  # function to get the connection string using: pymysql.connect(host, username, password, database)
         try:
+            print("env_var db_host_sains = " + environ.get("DB_HOST_SAINS"))
+            print(environ.get("DB_USER_SAINS"))
+            print(environ.get("DB_PW_SAINS"))
+            print(environ.get("DB_NAME_SAINS"))
             db_connection = pymysql.connect(
                 environ.get("DB_HOST_SAINS"),  # host
                 environ.get("DB_USER_SAINS"),  # username
@@ -26,7 +30,7 @@ class Extract():
         raw_data = []
 
         sql_string = f"SELECT * FROM transactions ORDER BY Date DESC LIMIT 1000"
-        data = self.sql_load_all(sql_string)
+        data = self.sql_load(sql_string)
         for row in data:
             raw_entry = row[0:8]
             raw_data.append(raw_entry)
