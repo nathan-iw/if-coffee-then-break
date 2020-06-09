@@ -44,6 +44,8 @@ jobs:
         export DB_USER_SAINS="$DB_USER_SAINS"
         export DB_PW_SAINS="$DB_PW_SAINS"
         export DB_NAME_SAINS="$DB_NAME_SAINS"
+        echo $DB_USER_SAINS
+        env
         python3 -m unittest  
         
 
