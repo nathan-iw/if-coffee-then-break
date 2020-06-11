@@ -1,7 +1,7 @@
 # Load
 import pymysql
 from os import environ
-from extract import Extract
+from csv_extract import Extract
 from transform import Transform
 from Secrets import get_secret
 from log import logger
@@ -28,14 +28,13 @@ class Load():
             logger.critical("Load connection failed LOL")
             print(f"didn't work lol {error}")
 
-    # def get_transformed_data(self):
-    #     app = Transform()
-    #     t_data = app.transform(app.get_raw_data()) # to be fixed, gets inital connection for extract twice currently. 
-    #     return t_data
 
     def update_sql(self, sql_string, args, connection):
         with connection.cursor() as cursor:
-            cursor.execute(sql_string, args)
+            try:
+                cursor.execute(sql_string, args)
+            except Exception as error:
+                print(f"didn't work lol doopy mcdoo {error}")
         return cursor
 
     def save_transaction(self, transformed_list):
@@ -45,8 +44,8 @@ class Load():
         print(f"The number of transactions processed:{len(transformed_list)}")
         index = 0
         for t in transformed_list:
-            args = t[0:9]
-            sql_query = "INSERT INTO clean_transactions (id, date, transaction_time, location, firstname, lastname, total_price, method, ccn) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)"
+            args = t[0:8]
+            sql_query = "INSERT INTO clean_transactions (id, date, transaction_time, location, firstname, lastname, total_price, method) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
             cursor = self.update_sql(sql_query, args, connection)
             if index %10 == 0 and index != 0:
                 t2 = time.time()
@@ -56,24 +55,30 @@ class Load():
                 time_remaining = total_time_estimate - current_load_time
                 print(f"Progress: {progress(percentage)} [{percentage}%] Estimated time remaining: {round(time_remaining,2)} seconds", end="\r")
             index += 1
+        print(f"Progress: {progress(100)} [100%] Load transactions complete! You are king d00p!", end="\r")
         connection.commit()
         cursor.close()
 
     def save_drink_menu(self, drink_dict):
         connection = self.get_connection()
         logger.info(f"The number of unique drinks processed: {len(drink_dict)}")
-        for key, value in drink_dict.items():
-            args = (value, key[0], key[1], key[2], key[3])
-            print(args)
-            # sql_query = "INSERT INTO drink_menu (id, drink_name, drink_size, drink_flavour, price) VALUES (%s, %s, %s, %s, %s)"
+        print(drink_dict)
+        for drink_features, drink_id in drink_dict.items():
+            args = (drink_id, drink_features[0], drink_features[1], drink_features[2], drink_features[3])
+            sql_query = "INSERT INTO drink_menu (id, drink_name, drink_size, drink_flavour, price) VALUES (%s, %s, %s, %s, %s)"
+            cursor = self.update_sql(sql_query, args, connection)
+        connection.commit()
+        try:
+            cursor.close()
+        except Exception as error:
+            print("no new drinks lol")
 
     def save_basket(self, basket_dict):
         connection = self.get_connection()
-        for key, value in basket_dict.items():
-            for drink in value:
-                args = (key, drink)
-                print(args)
-                # sql_query = "INSERT INTO basket (trans_id, drink_id) VALUES (%s, %s)"
+        for trans_id, drink_order in basket_dict.items():
+            for drink in drink_order:
+                args = (trans_id, drink)
+                sql_query = "INSERT INTO basket (trans_id, drink_id) VALUES (%s, %s)"
                 try:
                     cursor = self.update_sql(sql_query, args, connection)
                 except Exception as error:
@@ -81,35 +86,22 @@ class Load():
         connection.commit()
         cursor.close()
 
-#     def save_drink_menu(self, drink_dict):
-#         connection = self.get_connection()
-#         logger.info(f"The number of unique drinks processed: {len(drink_dict)}")
-#         for key in drink_dict.items():
-#             args = (key[0][0], key[0][1], key[0][2], key[1])
-#             print(args)
-#             sql_query = "INSERT INTO drink_menu (drink_name, drink_size, drink_flavour, price) VALUES (%s, %s, %s, %s)"
-#             try:
-#                 cursor = self.update_sql(sql_query, args, connection)
-#             except Exception as error:
-#                 print(f"DOOP! {error}")
-#         connection.commit()
-#         cursor.close()
-
-
     def save_location_menu(self, new_locations):
         connection = self.get_connection()
-        logger.info(f"The number of unique drinks processed: {len(location_list)}")
-        for key, value in new_locations.items():
-            args = (value, key)
-            print(args)
-            # sql_query = "INSERT INTO locations (id, location) VALUES (%s, %s)"
+        logger.info(f"The number of unique locations processed: {len(new_locations)}")
+        for location, location_id in new_locations.items():
+            args = (location_id, location)
+            sql_query = "INSERT INTO locations (id, location) VALUES (%s, %s)"
             try:
                 cursor = self.update_sql(sql_query, args, connection)
             except Exception as error:
                 logger.critical(f"DOOP! {error}")
         connection.commit()
-        cursor.close()
-       
+        try:
+            cursor.close()
+        except Exception as error:
+            print("no new locals lmao, where's ches??????")
+        
 def progress(percentage_progress):
     progress_bar = int(round(percentage_progress,0)) * "#"
     remaining_bar = (100 - int(round(percentage_progress,0))) * "-"

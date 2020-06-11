@@ -1,12 +1,11 @@
 import pymysql
 from os import environ
 import time
-from extract import Extract
+from csv_extract import Extract
 import datetime
 from log import logger
 from check_ids import Check_IDs
-import uuid
-# Ahoy
+
 
 class Transform():
     def __init__(self):
@@ -16,26 +15,35 @@ class Transform():
         self.basket_dict = {}
         self.new_locations = {} # add locations that aren't in the clean dictionary to here
         self.new_drinks = {} # add drinks that aren't in the clean dictionary to here
+        self.transformed_data = []
 
     def transform(self, raw_data): # needs test
-        transformed_data = [] # Clean list to populate with transformed data
-        for row in raw_data:
-            trans_id = self.id_generator()
-            t_date, t_time = self.date_breaker(row[1])  # defines variables for split date and time from date breaker
-            location_id = self.get_id(row[2])
-            t_first_name, t_last_name = self.person_breaker(row[3]) # splits first name from customer name.
-            drink_ids = self.order_loop(row[4])
-            self.drink_splitter(self.drink_breaker(row[4]))
-            t_price = int(float(row[5])*100)
-            t_method = self.pay_method(row[6])
-            t_card = self.card_masker(row[7])
+        print(raw_data)
+        for row in raw_data: # row: ['2020-06-11 13:26:25.441651', 'Uppingham', 'James Williams', ' Glass of milk: 0.7', 0.7, 'CARD', 'Type: mastercard\nCCN: 5439844399567818']
+            if len(row) != 7:
+                continue 
+            # trans_id = self.id_generator()
+            t_date, t_time = self.csv_date_breaker(row[0])  # defines variables for split date and time from date breaker
+            # t_date, t_time = self.date_breaker(row[1])  # defines variables for split date and time from date breaker
+            location_id = self.get_id(row[1])
+            trans_id = self.id_maker(row[0],location_id)
+            t_first_name, t_last_name = self.person_breaker(row[2]) # splits first name from customer name.            
+            drink_ids = self.order_to_drink_ids(row[3])            
             filled_basket = self.basket_generator(trans_id, drink_ids)
-            transformed_data.append([trans_id, t_date, t_time, location_id, t_first_name, t_last_name, t_price, t_method, t_card])
-        return (transformed_data, filled_basket)
-                # a new dictionary of drinks to add
+            t_price = int(float(row[4])*100)
+            t_method = self.pay_method(row[5])
 
-    def id_generator(self):
-        return str(uuid.uuid1())
+            self.transformed_data.append([trans_id, t_date, t_time, location_id, t_first_name, t_last_name, t_price, t_method])
+        print(self.transformed_data)
+        return (self.transformed_data, self.new_drinks, self.new_locations, filled_basket)
+
+    def id_maker(self, date_string, location_id):
+        characters_to_remove = "- :"
+        new_string = date_string
+        for character in characters_to_remove:
+            new_string = new_string.replace(character, "")
+        noo_id = new_string+'.'+str(location_id)
+        return(noo_id)
 
     def basket_generator(self, trans_id, drink_id_list):
         self.basket_dict[trans_id] = drink_id_list
@@ -52,7 +60,7 @@ class Transform():
             clean_order.append(i.strip())
         return clean_order
 
-    def flavour_breaker(self, drink):
+    def drink_flav_breaker(self, drink):
         broken_flavour = []
         flavour = None
         if " - " in drink:
@@ -69,17 +77,14 @@ class Transform():
         broken_flavour.append(flavour) # broken flavour = [large americano, hazlenut: 1.40]
         return broken_flavour
         
-    def order_loop(self, raw_orders):
-        basket = raw_orders.split(", ")
-        drinks_per_order = []
-        # basket = ["large armicano - Hazelnut: 1.40", "large armicano - Hazelnut: 1.40", "large armicano - Hazelnut: 1.40"]
+    def order_to_drink_ids(self, raw_orders):
+        basket = raw_orders.split(", ") # basket = ["large armicano - Hazelnut: 1.40", "large armicano - Hazelnut: 1.40", "large armicano - Hazelnut: 1.40"]
+        drink_ids_in_trans = []
         for drink in basket:
-            split_drink = self.drink_splitter(drink)
+            split_drink = self.get_split_drink(drink)
             drink_id = self.get_id(split_drink)
-            # self.drink_2_dict(split_drink, drink_dict) # add drink to menu
-            # check drink in dictionary to get ID - then append the ID in the next line
-            drinks_per_order.append(drink_id)
-        return(drinks_per_order)
+            drink_ids_in_trans.append(drink_id)
+        return(drink_ids_in_trans)
         
     def get_id(self, split_item): # functions for drink OR location
         if type(split_item) == tuple: # == drink
@@ -101,34 +106,32 @@ class Transform():
                 self.new_locations[split_item]=generated_id 
                 return (generated_id)
                 
-
     def item_adder(self, split_item, item_dict):
         max_id = max(item_dict.values())
         new_id = max_id + 1
         return(new_id)
         
-    def drink_splitter(self, raw_drink): # tested ... Raw order is a list of strings
+    def get_split_drink(self, raw_drink): 
         # "large armicano - Hazelnut: 1.40"
-        # If order contains ":" then contains a price, needs splitting.
-        drink_flav = self.flavour_breaker(raw_drink) # drink_flav = [large americano, hazlenut: 1.40]
-        if ": " in str(drink_flav[1]):
+        drink_name_size, flavour, drink_price = self.get_price_and_flavour(raw_drink)
+        size, name = self.drink_name_size_breaker(drink_name_size)
+        split_drink = (name, size, flavour, drink_price)
+        return split_drink
+
+    def get_price_and_flavour(self, drink_string):
+        drink_flav = self.drink_flav_breaker(drink_string) # drink_flav = [large americano, hazlenut: 1.40]
+        if ": " in str(drink_flav[1]): # if it has a price
             drink = drink_flav[0].strip()
             flavour_price = drink_flav[1].split(": ")
             flavour = flavour_price[0]
             drink_price = int(100*float(flavour_price[1]))
-        else:
+        else: # if it doesn't have a price
             drink = drink_flav[0]
             flavour = drink_flav[1]
-            # if flavour == None:
-            # flavour = "Orginal"
-            # print(flavour)
             drink_price = 0
-        drink = self.get_name(drink)
-        split_drink = (drink[1], drink[0], flavour, drink_price)
+        return drink, flavour, drink_price
 
-        return split_drink
-
-    def get_name(self, drink):
+    def drink_name_size_breaker(self, drink):
         name_broken = []
         drink_size = "N/A"
         if "Large" in drink:
@@ -143,22 +146,20 @@ class Transform():
                 drink_size = "N/A"
         return (drink_size, drink_name)
 
-    
-
     def date_breaker(self, date): # not tested
         split_date = date.date()
         split_time = date.time()
         return (split_date, split_time) 
 
+    def csv_date_breaker(self, date): # not tested
+        split_date = date.split(" ")
+        clean_date = split_date[0]
+        clean_time = split_date[1]
+        return (clean_date, clean_time)
+
     def pay_method(self, raw_method): # tested
         pay_method = raw_method.capitalize()
         return pay_method
-
-    def card_masker(self, ccn): # tested
-        if ccn == None:
-            return None
-        digits = ccn.replace(ccn[:-4], (len(ccn)-4) * "*") # X out everything other than the last 4 digits
-        return digits # returns the disguised ccn
 
     def person_breaker(self, person): # tested
         broken_person = person.split(" ")
