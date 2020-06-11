@@ -9,32 +9,27 @@ import uuid
 # Ahoy
 
 class Transform():
+    def __init__(self):
+        self.id_instance = Check_IDs()
+        self.location_dict = self.id_instance.load_ids("locations")
+        self.drink_dict = self.id_instance.load_ids("drink_menu")
+        self.basket_dict = {}
+        self.new_locations = {} # add locations that aren't in the clean dictionary to here
+        self.new_drinks = {} # add drinks that aren't in the clean dictionary to here
 
     def transform(self, raw_data): # needs test
-        id_instance = Check_IDs() # feed into transform function
-        drink_dict = id_instance.load_ids("drink_menu") # feed into transform function
-        location_dict = id_instance.load_ids("locations") # feed into transform function
-        # load_max_drink_ID = int(max()) # make this function in check_ids file as generic function and import
-        # load_max_location_ID = int(max()) # make this function in check_ids file as generic function and import
-
-        # # ugly for now:
-        # new_drinks = {} # add drinks that aren't in the clean dictionary to here
-        # new_locations = {} # add locations that aren't in the clean dictionary to here
-
-        basket_dict = {} 
-
         transformed_data = [] # Clean list to populate with transformed data
         for row in raw_data:
             trans_id = self.id_generator()
             t_date, t_time = self.date_breaker(row[1])  # defines variables for split date and time from date breaker
-            location_id = self.get_id(row[2], location_dict)
+            location_id = self.get_id(row[2])
             t_first_name, t_last_name = self.person_breaker(row[3]) # splits first name from customer name.
-            drink_ids = self.order_loop(row[4], drink_dict)
+            drink_ids = self.order_loop(row[4])
             self.drink_splitter(self.drink_breaker(row[4]))
             t_price = int(float(row[5])*100)
             t_method = self.pay_method(row[6])
             t_card = self.card_masker(row[7])
-            filled_basket = self.basket_generator(trans_id, drink_ids, basket_dict)
+            filled_basket = self.basket_generator(trans_id, drink_ids)
             transformed_data.append([trans_id, t_date, t_time, location_id, t_first_name, t_last_name, t_price, t_method, t_card])
         return (transformed_data, filled_basket)
                 # a new dictionary of drinks to add
@@ -42,9 +37,9 @@ class Transform():
     def id_generator(self):
         return str(uuid.uuid1())
 
-    def basket_generator(self, trans_id, drink_id_list, basket_dict):
-        basket_dict[trans_id] = drink_id_list
-        return basket_dict
+    def basket_generator(self, trans_id, drink_id_list):
+        self.basket_dict[trans_id] = drink_id_list
+        return self.basket_dict
 
     def location_adder(self, location, location_list):
         location_list.append(location)
@@ -74,49 +69,43 @@ class Transform():
         broken_flavour.append(flavour) # broken flavour = [large americano, hazlenut: 1.40]
         return broken_flavour
         
-    def order_loop(self, raw_orders, drink_dict):
+    def order_loop(self, raw_orders):
         basket = raw_orders.split(", ")
         drinks_per_order = []
         # basket = ["large armicano - Hazelnut: 1.40", "large armicano - Hazelnut: 1.40", "large armicano - Hazelnut: 1.40"]
         for drink in basket:
             split_drink = self.drink_splitter(drink)
-            drink_id = self.get_id(split_drink, drink_dict)
+            drink_id = self.get_id(split_drink)
             # self.drink_2_dict(split_drink, drink_dict) # add drink to menu
             # check drink in dictionary to get ID - then append the ID in the next line
             drinks_per_order.append(drink_id)
         return(drinks_per_order)
         
-    def get_id(self, split_item, item_dict): # functions for drink OR location
-        print(f"split item {split_item}")
-        if type(split_item) == tuple: # drink
+    def get_id(self, split_item): # functions for drink OR location
+        if type(split_item) == tuple: # == drink
             try:
-                found_id = item_dict[split_item[0:3]]
+                found_id = self.drink_dict[split_item[0:3]]
                 return (found_id)
             except:
-                print(f"made it to finally")
-                self.item_adder(split_item, item_dict)
-        else: # location 
+                generated_id = self.item_adder(split_item, self.drink_dict)
+                self.drink_dict[split_item[0:3]] = generated_id
+                self.new_drinks[split_item]=generated_id
+                return (generated_id)
+        else: # == location 
             try:
-                found_id = item_dict[split_item]
-                print(found_id)
+                found_id = self.location_dict[split_item]
                 return (found_id)
             except:
-                print(f"made it to finally")
-                # self.item_adder(split_item, item_dict)
-                pass
- 
-    def item_adder(self, split_item, item_dict, new_dict):
-        # calculate max ID
-        item_dict[split_item]=max_id
-        # add to item_dict
-        pass
+                generated_id = self.item_adder(split_item, self.location_dict)
+                self.location_dict[split_item]=generated_id 
+                self.new_locations[split_item]=generated_id 
+                return (generated_id)
+                
 
-
-    def drink_2_dict(self, split_drink, drink_dict):
-        x = {(split_drink[0:3]): split_drink[3]}
-        drink_dict.update(x)
-        return drink_dict
-        # (Drink name, drink size, drink flava): price
+    def item_adder(self, split_item, item_dict):
+        max_id = max(item_dict.values())
+        new_id = max_id + 1
+        return(new_id)
         
     def drink_splitter(self, raw_drink): # tested ... Raw order is a list of strings
         # "large armicano - Hazelnut: 1.40"

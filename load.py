@@ -8,7 +8,7 @@ from log import logger
 import time
 
 class Load():
-    
+
     def get_connection(self):  # function to get the connection string using: pymysql.connect(host, username, password, database)
         if environ.get("ENVIRONMENT") == "prod":
             host, username, password, db_name = get_secret()[0:5]
@@ -62,17 +62,18 @@ class Load():
     def save_drink_menu(self, drink_dict):
         connection = self.get_connection()
         logger.info(f"The number of unique drinks processed: {len(drink_dict)}")
-        for key in drink_dict.items():
-            args = (key[0][0], key[0][1], key[0][2], key[1])
+        for key, value in drink_dict.items():
+            args = (value, key[0], key[1], key[2], key[3])
             print(args)
-            sql_query = "INSERT INTO drink_menu (drink_name, drink_size, drink_flavour, price) VALUES (%s, %s, %s, %s)"
+            # sql_query = "INSERT INTO drink_menu (id, drink_name, drink_size, drink_flavour, price) VALUES (%s, %s, %s, %s, %s)"
 
     def save_basket(self, basket_dict):
         connection = self.get_connection()
         for key, value in basket_dict.items():
             for drink in value:
                 args = (key, drink)
-                sql_query = "INSERT INTO basket (trans_id, drink_id) VALUES (%s, %s)"
+                print(args)
+                # sql_query = "INSERT INTO basket (trans_id, drink_id) VALUES (%s, %s)"
                 try:
                     cursor = self.update_sql(sql_query, args, connection)
                 except Exception as error:
@@ -95,13 +96,13 @@ class Load():
 #         cursor.close()
 
 
-    def save_location_menu(self, location_list):
+    def save_location_menu(self, new_locations):
         connection = self.get_connection()
         logger.info(f"The number of unique drinks processed: {len(location_list)}")
-        for place in location_list:
-            args = (place)
-            # print(args)
-            sql_query = "INSERT INTO locations (location) VALUES (%s)"
+        for key, value in new_locations.items():
+            args = (value, key)
+            print(args)
+            # sql_query = "INSERT INTO locations (id, location) VALUES (%s, %s)"
             try:
                 cursor = self.update_sql(sql_query, args, connection)
             except Exception as error:

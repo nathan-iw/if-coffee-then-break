@@ -14,7 +14,9 @@ The POC of the 'if-coffee-then-break' project. An ETL Python programmed to clean
 >(633, datetime.datetime(2020, 5, 18, 15, 46, 1), 'Isle of Wight', 'Oscar Ohara', ' Frappes - Chocolate Cookie', Decimal('2.75'), 'CASH', None)
 
 ### Input SQL table format:
-> PLACE HOLDER
+> INSERT INTO drinks_menu (column1, column2, column3, column4) VALUES (value1, value2, value3, value4);
+
+> INSERT INTO locations (column1, column2) VALUES (value1, value2);
 
 ### Output: 
 
