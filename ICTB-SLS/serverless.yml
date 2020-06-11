@@ -1,0 +1,66 @@
+service: ictb-sls
+
+provider:
+  name: aws
+  runtime: python3.8
+
+# you can overwrite defaults here
+#  stage: dev
+  region: eu-west-1
+
+functions:
+  auto_etl:
+    handler: ictb-etl.auto_etl
+    layers:
+      - {Ref: PythonRequirementsLambdaLayer}
+    events:
+      - s3: 
+          bucket: sainos-bucket
+          event: s3:ObjectCreated:Put  
+          rules:
+            - prefix: transactions/
+            - suffix: .csv
+          existing: true
+    environment:
+      BUCKET: sainos-bucket
+      DB_USER2: admin
+      DB_PW2: zA8bnZeg7huCIKnLgXfEqq3c
+      DB_HOST2: cafe-poc.cqohmuwgawul.eu-west-1.rds.amazonaws.com
+      DB_NAME2: poc_data
+
+#    Define function environment variables here
+#    environment:
+#      variable2: value2
+ 
+plugins:
+  - serverless-python-requirements
+custom:
+  pythonRequirements:
+    dockerizePip: non-linux
+    layer: true  #Put dependencies into a Lambda Layer.
+    slim: true
+    noDeploy:
+      - boto3
+      - botocore
+      - docutils
+      - jmespath
+      - pip
+      - python-dateutil
+      - s3transfer
+      - setuptools
+      - six
+      - numpy
+  
+package: null
+exclude:
+  - venv/** 
+  - node_modules/** 
+  - model/** 
+  - .vscode/** 
+  - __pycache__/** 
+  - .idea/**
+iamRoleStatements:
+  - Effect: Allow
+    Action:
+      - 's3:GetObject'
+    Resource: 'arn:aws:s3:::sainos-bucket'  
