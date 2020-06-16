@@ -3,7 +3,6 @@ service: ictb-sls
 provider:
   name: aws
   runtime: python3.8
-
 # you can overwrite defaults here
 #  stage: dev
   region: eu-west-1
@@ -59,8 +58,13 @@ exclude:
   - .vscode/** 
   - __pycache__/** 
   - .idea/**
+  
 iamRoleStatements:
   - Effect: Allow
     Action:
       - 's3:GetObject'
     Resource: 'arn:aws:s3:::sainos-bucket'  
+    Statement:
+    - Effect: Allow
+      Action: s3:*
+      Resource: "*"
