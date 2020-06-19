@@ -100,6 +100,11 @@ class TransformTests(unittest.TestCase):
         actual = self.app.date_breaker(datetime.datetime(2020,5,19,11,11,11))
         self.assertEqual(expected,actual)
 
+    def test_csv_date_breaker(self):
+        expected = ("2020,5,19", "11,11,11")
+        actual = self.app.csv_date_breaker(("2020,5,19 11,11,11"))
+        self.assertEqual(expected,actual)
+
 
     @patch("transform.Transform.date_breaker", return_value=unittest.mock)
     @patch("transform.Transform.person_breaker", return_value=unittest.mock)
@@ -156,7 +161,56 @@ class TransformTests(unittest.TestCase):
         # , 'Frappes - Coffee: 2.75', 'Large Espresso: 1.8', 'Frappes - Chocolate Cookie: 2.75'])
         actual_outcome = self.app.get_split_drink(mock_raw_drink)
         self.assertEqual(expected_outcome, actual_outcome)
-        
+    
+    def test_item_adder(self): 
+        mock_item_dict = {'apple': 2, 'orange': 3, 'grapes': 4}
+        nothing = "0"
+        expected_outcome = 5
+        actual_outcome = self.app.item_adder(nothing ,mock_item_dict)
+        self.assertEqual(expected_outcome, actual_outcome)
+
+    def test_location_adder(self):
+        mock_location_list = ["Uppingham", "Oakham"]
+        mock_location = "Lyddington"
+        expected_outcome = ["Uppingham", "Oakham", "Lyddington"]
+        actual_outcome = self.app.location_adder(mock_location, mock_location_list)
+        self.assertEqual(expected_outcome, actual_outcome)
+
+    def test_drink_name_size_breaker_large(self):
+        mock_drink = "Large Espresso"
+        expected_outcome = "Large", "Espresso"
+        actual_outcome = self.app.drink_name_size_breaker(mock_drink)
+        self.assertEqual(expected_outcome, actual_outcome)
+
+    def test_drink_name_size_breaker_regular(self):
+        mock_drink = "Regular Espresso"
+        expected_outcome = "Regular", "Espresso"
+        actual_outcome = self.app.drink_name_size_breaker(mock_drink)
+        self.assertEqual(expected_outcome, actual_outcome)
+
+    def test_drink_name_size_breaker_none(self):
+        mock_drink = "Espresso"
+        expected_outcome = "N/A", "Espresso"
+        actual_outcome = self.app.drink_name_size_breaker(mock_drink)
+        self.assertEqual(expected_outcome, actual_outcome)
+
+    def test_get_price_and_flavour_with_price(self):
+        mock_drink = "large americano, hazlenut: 1.40"
+        expected_outcome = "large americano, hazlenut", "Original", 140
+        actual_outcome = self.app.get_price_and_flavour(mock_drink)
+        self.assertEqual(expected_outcome, actual_outcome)
+
+    def test_get_price_and_flavour_without_price(self):
+        mock_drink = "large americano, hazlenut"
+        expected_outcome = "large americano, hazlenut", "Original", 0
+        actual_outcome = self.app.get_price_and_flavour(mock_drink)
+        self.assertEqual(expected_outcome, actual_outcome)
+
+
+
+
+    
+    
 
 
 
