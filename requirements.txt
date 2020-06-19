@@ -9,3 +9,9 @@ python-dateutil==2.8.1
 s3transfer==0.3.3
 six==1.15.0
 urllib3==1.25.9
+
+2020-06-17 16:30:21.408840it worked with cron
+2020-06-17 16:38:30.703004it worked with cron
+2020-06-17 16:38:51.859568it worked with cron
+2020-06-17 16:39:09.857414it worked with cron
+2020-06-17 16:44:21.764442 it worked with cron
