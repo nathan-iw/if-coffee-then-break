@@ -22,8 +22,8 @@ if environ.get("ENVIRONMENT") == "prod":
     logger.info("test log statement with extra props", extra={'props': {"extra_property": 'extra_value'}})
 else:
     logging.basicConfig(
-            filename='filename.log',
-            filemode='w',
+            filename='loggy.log',
+            filemode='a',
             format='%(asctime)s,%(msecs)d %(name)s %(levelname)s %(message)s',
             datefmt='%H:%M:%S',
             level=logging.INFO

@@ -21,19 +21,20 @@ class Transform():
         if len(raw_data) == 0:
                 print("No data!")
                 exit()  
+    # aw data is here g'! [(3075814, datetime.datetime(2020, 6, 18, 16, 38, 19), 'Durham', 'Marilyn Clower', 'Speciality Tea - Camomile: 1.3, Regular Flavoured latte - Vanilla: 2.55', Decimal('11.65'), 'CASH', None)
         for row in raw_data: # row: ['2020-06-11 13:26:25.441651', 'Uppingham', 'James Williams', ' Glass of milk: 0.7', 0.7, 'CARD', 'Type: mastercard\nCCN: 5439844399567818']
             print(f"Raw data is here g'! {raw_data}")
             # trans_id = self.id_generator()
-            t_date, t_time = self.csv_date_breaker(row[0])  # defines variables for split date and time from date breaker
+            t_date, t_time = self.date_breaker(row[1])  # defines variables for split date and time from date breaker
             # t_date, t_time = self.date_breaker(row[1])  # defines variables for split date and time from date breaker
-            location_id = self.get_id(row[1])
-            trans_id = self.id_maker(row[0],location_id)
-            t_first_name, t_last_name = self.person_breaker(row[2]) # splits first name from customer name.            
-            drink_ids = self.order_to_drink_ids(row[3])            
+            location_id = self.get_id(row[2])
+            trans_id = self.id_maker(str(row[1]),location_id)
+            t_first_name, t_last_name = self.person_breaker(row[3]) # splits first name from customer name.            
+            drink_ids = self.order_to_drink_ids(row[4])            
             filled_basket = self.basket_generator(trans_id, drink_ids)
             print(filled_basket)
-            t_price = int(float(row[4])*100)
-            t_method = self.pay_method(row[5])
+            t_price = int(float(row[5])*100)
+            t_method = self.pay_method(row[6])
 
             self.transformed_data.append([trans_id, t_date, t_time, location_id, t_first_name, t_last_name, t_price, t_method])
         print(self.transformed_data)
@@ -49,7 +50,6 @@ class Transform():
 
     def basket_generator(self, trans_id, drink_id_list):
         self.basket_dict[trans_id] = drink_id_list
-        prin
         return self.basket_dict
 
     def location_adder(self, location, location_list):

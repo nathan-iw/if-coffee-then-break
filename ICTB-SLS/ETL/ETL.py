@@ -3,7 +3,8 @@ from os import environ
 import time
 # from extract import Extract
 from csv_extract import Extract
-from transform import Transform
+from transform import Transformls
+
 from load import Load
 from log import logger
          
@@ -32,10 +33,10 @@ def run_etl(filename):
     print(f"Transform time: {transform_time}")
     appley = Load()
 
-    appley.save_transaction(transformed_data) # populate RDS instance with cleaned data.
-    appley.save_drink_menu(new_drinks) # generate drinks menu
-    appley.save_location_menu(new_locations) # generate locations menu
-    appley.save_basket(basket) # generate drinks menu
+    # appley.save_transaction(transformed_data) # populate RDS instance with cleaned data.
+    # appley.save_drink_menu(new_drinks) # generate drinks menu
+    # appley.save_location_menu(new_locations) # generate locations menu
+    # appley.save_basket(basket) # generate drinks menu
 
 
     end_load = time.time()
